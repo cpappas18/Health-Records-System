@@ -1,5 +1,6 @@
 from health_records_system import HealthRecordsSystem, Patient
 
+
 def main():
     system = HealthRecordsSystem()
     
@@ -46,8 +47,7 @@ def main():
         else:
             print("Please enter a number between 1 and 4.")
 
-    
-    
+
 def view_edit_records(patient):
     while True:
         option = input("""
@@ -67,13 +67,14 @@ def view_edit_records(patient):
 
         if option == 1:
             for medication, (dosage, frequency) in patient.medication.items():
-                print(f"Medication: #{medication}, Dosage: #{dosage}, Frequency: #{frequency}\n")
+                print(f"Medication: {medication}, Dosage: {dosage}, Frequency: {frequency}\n")
 
         elif option == 2:
             medication = input("Please input the name of the medication: ")
             dosage = input("Please input the dosage: ")
             frequency = input("Please input the frequency of this dosage: ")
             patient.add_medication(medication, dosage, frequency)
+
 
 if __name__ == "__main__":
     main()

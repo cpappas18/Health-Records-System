@@ -47,15 +47,13 @@ class Patient:
     
     def add_medication(self, medication, dosage, frequency):
         if medication in self.__medication:
-            overwrite = input(f"Patient #{patient.ID} is already taking this medication. Overwrite dosage and frequency? Y/N")
+            overwrite = input(f"Patient #{self.__ID} is already taking this medication. Overwrite dosage and frequency? Y/N")
             if overwrite == "Y":
                 self.__medication[medication] = (dosage, frequency)
-                print(f"Medication successfully updated in patient #{ID}'s record.")
+                print(f"Medication successfully updated in patient #{self.__ID}'s record.")
             else:
-                print(f"Failure: Medication was not updated in patient #{ID}'s record.")
+                print(f"Failure: Medication was not updated in patient #{self.__ID}'s record.")
         else:
-                self.__medication[medication] = (dosage, frequency)
-                print(f"Medication successfully added to patient #{ID}'s record.")   
-     
+            self.__medication[medication] = (dosage, frequency)
+            print(f"Medication successfully added to patient #{self.__ID}'s record.")
 
-        
