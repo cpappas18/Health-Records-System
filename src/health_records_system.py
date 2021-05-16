@@ -1,7 +1,19 @@
 class HealthRecordsSystem(object):
 
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        if HealthRecordsSystem.__instance is None:
+            HealthRecordsSystem()
+        return HealthRecordsSystem.__instance
+
     def __init__(self):
-        self.__patients = {}
+        if HealthRecordsSystem.__instance is None:
+            HealthRecordsSystem.__instance = self
+            self.__patients = {}
+        else:
+            raise Exception("HealthRecordsSystem class is a Singleton.")
 
     def get_patient(self, id):
         return self.__patients[id]
