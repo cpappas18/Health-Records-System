@@ -70,29 +70,26 @@ class Patient(object):
     def test_results(self):
         return self.__test_results
     
-    def add_medication(self, medication, dosage, frequency):
-        if medication in self.__medication:
+    def add_medication(self, med):
+        if med.name in self.__medication:
             overwrite = input(f"Patient #{self.__id} is already taking this medication. Overwrite dosage and frequency? Y/N")
             if overwrite == "Y":
-                self.__medication[medication] = (dosage, frequency)
+                self.__medication[med.name] = med
                 print(f"Medication successfully updated in patient #{self.__id}'s record.")
             else:
                 print(f"Failure: Medication was not updated in patient #{self.__id}'s record.")
                 return
         else:
-            self.__medication[medication] = (dosage, frequency)
+            self.__medication[med.name] = med
             print(f"Medication successfully added to patient #{self.__id}'s record.")
 
-    def remove_medication(self, name):
-        try:
-            del self.__medication[name]
-            print(f"Medication successfully removed from patient #{self.__id}'s record.")
-        except KeyError:
-            print(f"Failure: Medication does not exist in patient #{self.__id}'s record.")
-            return
+    # TODO specify precondition
+    def remove_medication(self, med):
+        del self.__medication[med.name]
+        print(f"Medication successfully removed from patient #{self.__id}'s record.")
 
     def add_test_results(self, name, date, result):
-        if (name, date) in self.__test_results:
+        if (name, date) in self.__test_results.keys():
             overwrite = input(f"A result for this test on {date} has already been recorded. Overwrite test result? Y/N")
             if overwrite == "Y":
                 self.__test_results[(name, date)] = result
@@ -103,3 +100,38 @@ class Patient(object):
         else:
             self.__test_results[(name, date)] = result
             print(f"Test result successfully added to patient #{self.__id}'s record.")
+
+    def clear_test_results(self):
+        self.__test_results.clear()
+
+
+class Medication(object):
+
+    def __init__(self, name, dosage, frequency):
+        self._name = name
+        self._dosage = dosage
+        self._frequency = frequency
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def dosage(self):
+        return self._dosage
+
+    @dosage.setter
+    def dosage(self, value):
+        self._dosage = value
+
+    @property
+    def frequency(self):
+        return self._frequency
+
+    @frequency.setter
+    def frequency(self, value):
+        self._frequency = value
