@@ -6,14 +6,16 @@ def view_edit_records(patient):
     while True:
         option = input("""
         ----- View and Edit Patient Records -----
-            Enter a number to select an option:
             1. Get patient contact information
             2. View medication
             3. Add medication
             4. Remove medication
             5. View test results
             6. Add test results
-            7. Cancel
+            7. Undo last action
+            8. Redo last action
+            9. Cancel
+            Enter a number to select an option:
             """)
 
         try:
@@ -38,15 +40,23 @@ def view_edit_records(patient):
 
         elif option == 4:
             med_name = input("Please input the name of the medication: ")
-            if med_name in patient.medication.keys():
-                INVOKER.execute(REMOVE_MEDS, patient, patient.medication[med_name])
-            else:
-                print(f"Failure: Medication does not exist in patient #{patient.id}'s record.")
-                return
+            med = SYSTEM.get_medication(med_name)
+
+            if med is None:
+                continue
+
+            INVOKER.execute(REMOVE_MEDS, patient, med_name)
 
         elif option == 5:
-            for (name, date), result in patient.test_results.items():
-                print(f"Test: {name}, Date: {date}, Result: {result}\n")
+            view_option = input("To view all test results, type \"all\"."
+                                "Otherwise, specify the test name and date that it was performed in the format \"name, DD/MM/YYYY\".")
+
+            if view_option == "all":
+                for (test_name, date), result in patient.test_results.items():
+                    print(f"Test: {test_name}, Date: {date}, Result: {result}\n")
+            else:
+                test_name, date = view_option.split(",")
+                result = patient.get_test_results(test_name, date)
 
         elif option == 6:
             test_name = input("Please input the name of the test: ")
@@ -55,6 +65,12 @@ def view_edit_records(patient):
             INVOKER.execute(ADD_TEST_RESULTS, patient, test_name, date, result)
 
         elif option == 7:
+            INVOKER.undo()
+
+        elif option == 8:
+            INVOKER.redo()
+
+        elif option == 9:
             return
 
         else:
@@ -83,11 +99,13 @@ if __name__ == "__main__":
     while True:
         option = input("""
         ----- Electronic Health Records System -----
-        Enter a number to select an option:
         1. View and edit patient records
         2. Add a new patient
         3. Delete a patient's file
-        4. Cancel
+        4. Undo last action
+        5. Redo last action
+        6. Cancel
+        Enter a number to select an option:
         """)
 
         try:
@@ -96,18 +114,17 @@ if __name__ == "__main__":
             print("Please enter a number between 1 and 4.")
             continue
 
-        if option != 4:
+        if option == 1:
             id = input("Please input the patient's ID number: ")
-            try:
-                patient = SYSTEM.get_patient(id)
-            except KeyError:
-                print(f"Patient #{id} does not exist in the System.")
+            patient = SYSTEM.get_patient(id)
+
+            if patient is None:
                 continue
 
-        if option == 1:
             view_edit_records(patient)
 
         elif option == 2:
+            id = input("Please input the patient's ID number: ")
             name = input("Please input the patient's name: ")
             age = input("Please input the patient's age: ")
             phone_number = input("Please input the patient's telephone number: ")
@@ -115,11 +132,23 @@ if __name__ == "__main__":
             INVOKER.execute(ADD_PATIENT, patient)
 
         elif option == 3:
+            id = input("Please input the patient's ID number: ")
+            patient = SYSTEM.get_patient(id)
+
+            if patient is None:
+                continue
+
             INVOKER.execute(REMOVE_PATIENT, patient)
 
         elif option == 4:
+            INVOKER.undo()
+
+        elif option == 5:
+            INVOKER.redo()
+
+        elif option == 6:
             print("Thank you for using the Electronic Health Records System!")
             break
 
         else:
-            print("Please enter a number between 1 and 4.")
+            print("Please enter a number between 1 and 6.")
