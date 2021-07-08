@@ -39,15 +39,20 @@ class Invoker(metaclass=ABCMeta):
         self._commands.append(command)
 
     def execute(self, command, *args):
+        """
+        
+        :param command:
+        :param args:
+        """
         if command in self._commands:
             self._position += 1
             command.execute(*args)
 
-            if len(self._history) == self._position: # nothing has been undone or all undone commands have been redone
+            if len(self._history) == self._position:  # nothing has been undone or all undone commands have been redone
                 self._history.append((command, args))
 
             else:  # some commands have been undone before this command was executed
-                self._history = self._history[:self._position+1] # erase history that occurs after the current position
+                self._history = self._history[:self._position+1]  # erase history that occurs after the current position
                 self._history.append((command, args))
 
         else:
