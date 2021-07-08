@@ -2,7 +2,7 @@
 
 Note: this project is ongoing, in the testing phase
 
-An electronic health records system implemented in Python to demonstrate object-oriented programming, software design patterns, and unit testing. 
+An electronic health records system implemented in Python to demonstrate object-oriented programming and software design patterns. 
 
 # Design Patterns
 * Command design pattern: This pattern is used to achieve undo and redo functionality in the application. The Invoker passes command requests to the Receiver (the HealthRecordsSystem class) and commands are defined by the ICommand interface. Concrete commands include AddPatient, RemovePatient, AddMedication, RemoveMedication, and AddTestResults. This pattern is advantageous because it allows for tracking operations history, it ensures the separation of concerns so that objects serve as manageable units of functionality, and it supports efficient scalability of the system because new commands can be added without changing existing code. 
