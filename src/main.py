@@ -2,6 +2,81 @@ from health_records_system import *
 from command import *
 
 
+def main():
+    SYSTEM = HealthRecordsSystem()  # instantiate Receiver in Command design pattern
+
+    # create commands
+    ADD_PATIENT = AddPatientCommand(SYSTEM)
+    REMOVE_PATIENT = RemovePatientCommand(SYSTEM)
+    ADD_MEDS = AddMedicationCommand(SYSTEM)
+    REMOVE_MEDS = RemoveMedicationCommand(SYSTEM)
+    ADD_TEST_RESULTS = AddTestResultsCommand(SYSTEM)
+
+    # register commands with Invoker
+    INVOKER = Invoker()
+    INVOKER.register(ADD_PATIENT)
+    INVOKER.register(REMOVE_PATIENT)
+    INVOKER.register(ADD_MEDS)
+    INVOKER.register(REMOVE_MEDS)
+    INVOKER.register(ADD_TEST_RESULTS)
+
+    while True:
+        option = input("""
+        ----- Electronic Health Records System -----
+        1. View and edit patient records
+        2. Add a new patient
+        3. Delete a patient's file
+        4. Undo last action
+        5. Redo last action
+        6. Cancel
+        Enter a number to select an option:
+        """)
+
+        try:
+            option = int(option)
+        except ValueError:
+            print("Please enter a number between 1 and 6.")
+            continue
+
+        if option == 1:
+            id = input("Please input the patient's ID number: ")
+            patient = SYSTEM.get_patient(id)
+
+            if patient is None:
+                continue
+
+            view_edit_records(patient)
+
+        elif option == 2:
+            id = input("Please input the patient's ID number: ")
+            name = input("Please input the patient's name: ")
+            age = input("Please input the patient's age: ")
+            phone_number = input("Please input the patient's telephone number: ")
+            patient = Patient(id, name, age, phone_number)
+            INVOKER.execute(ADD_PATIENT, patient)
+
+        elif option == 3:
+            id = input("Please input the patient's ID number: ")
+            patient = SYSTEM.get_patient(id)
+
+            if patient is None:
+                continue
+
+            INVOKER.execute(REMOVE_PATIENT, patient)
+
+        elif option == 4:
+            INVOKER.undo()
+
+        elif option == 5:
+            INVOKER.redo()
+
+        elif option == 6:
+            print("Thank you for using the Electronic Health Records System!")
+            break
+
+        else:
+            print("Please enter a number between 1 and 6.")    
+
 def view_edit_records(patient):
     while True:
         option = input("""
@@ -78,77 +153,5 @@ def view_edit_records(patient):
 
 
 if __name__ == "__main__":
+    main()
 
-    SYSTEM = HealthRecordsSystem()  # instantiate Receiver in Command design pattern
-
-    # create commands
-    ADD_PATIENT = AddPatientCommand(SYSTEM)
-    REMOVE_PATIENT = RemovePatientCommand(SYSTEM)
-    ADD_MEDS = AddMedicationCommand(SYSTEM)
-    REMOVE_MEDS = RemoveMedicationCommand(SYSTEM)
-    ADD_TEST_RESULTS = AddTestResultsCommand(SYSTEM)
-
-    # register commands with Invoker
-    INVOKER = Invoker()
-    INVOKER.register(ADD_PATIENT)
-    INVOKER.register(REMOVE_PATIENT)
-    INVOKER.register(ADD_MEDS)
-    INVOKER.register(REMOVE_MEDS)
-    INVOKER.register(ADD_TEST_RESULTS)
-
-    while True:
-        option = input("""
-        ----- Electronic Health Records System -----
-        1. View and edit patient records
-        2. Add a new patient
-        3. Delete a patient's file
-        4. Undo last action
-        5. Redo last action
-        6. Cancel
-        Enter a number to select an option:
-        """)
-
-        try:
-            option = int(option)
-        except ValueError:
-            print("Please enter a number between 1 and 4.")
-            continue
-
-        if option == 1:
-            id = input("Please input the patient's ID number: ")
-            patient = SYSTEM.get_patient(id)
-
-            if patient is None:
-                continue
-
-            view_edit_records(patient)
-
-        elif option == 2:
-            id = input("Please input the patient's ID number: ")
-            name = input("Please input the patient's name: ")
-            age = input("Please input the patient's age: ")
-            phone_number = input("Please input the patient's telephone number: ")
-            patient = Patient(id, name, age, phone_number)
-            INVOKER.execute(ADD_PATIENT, patient)
-
-        elif option == 3:
-            id = input("Please input the patient's ID number: ")
-            patient = SYSTEM.get_patient(id)
-
-            if patient is None:
-                continue
-
-            INVOKER.execute(REMOVE_PATIENT, patient)
-
-        elif option == 4:
-            INVOKER.undo()
-
-        elif option == 5:
-            INVOKER.redo()
-
-        elif option == 6:
-            print("Thank you for using the Electronic Health Records System!")
-            break
-
-        else:
-            print("Please enter a number between 1 and 6.")
