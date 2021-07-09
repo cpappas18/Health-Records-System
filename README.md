@@ -24,7 +24,7 @@ Users are able to...
 To run the program, please use the command `python3 main.py`.
 
 # Unit Testing
-Test modules have been written to thoroughly test the program for errors. If any issues are found, please feel free to add your own tests and merge them with the main branch. 
+Test modules are in the process of being written to thoroughly test the program for errors. Please be aware that this project is unfinished and testing will be completed soon. If any additional issues are found, please feel free to add your own tests and merge them with the main branch. 
 
 To run the tests, please use the command `python3 -m unittest`.
 
