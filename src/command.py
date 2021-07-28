@@ -52,7 +52,7 @@ class Invoker(metaclass=ABCMeta):
                 self._history.append((command, args))
 
             else:  # some commands have been undone before this command was executed
-                self._history = self._history[:self._position+1]  # erase history that occurs after the current position
+                self._history = self._history[:self._position]  # erase history that occurs after the current position
                 self._history.append((command, args))
 
         else:
@@ -73,7 +73,7 @@ class Invoker(metaclass=ABCMeta):
             command_to_redo = self._history[self._position]  # (command, args)
             command_to_redo[0].execute(command_to_redo[1])
 
-        else: # redo the last performed action
+        else:  # redo the last performed action
             command_to_redo = self._history[self._position]  # (command, args)
             command_to_redo[0].execute(command_to_redo[1])
 

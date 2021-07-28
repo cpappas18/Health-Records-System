@@ -20,7 +20,15 @@ class TestInvoker(TestCase):
         self.assertEqual(self.invoker._history, [(command_stub, ("arg",))])
 
     def test_execute_for_some_undone(self):
-        self.fail()
+        command_stub1 = Mock(ICommand)
+        command_stub2 = Mock(ICommand)
+        self.invoker.register(command_stub1)
+        self.invoker.register(command_stub2)
+        self.invoker.execute(command_stub1, "command_1_first")
+        self.invoker.execute(command_stub1, "command_1_second")
+        self.invoker.undo()
+        self.invoker.execute(command_stub2, "command_2_first")
+        self.assertEqual(self.invoker._history, [(command_stub1, ("command_1_first",)), (command_stub2, ("command_2_first",))])
 
     def test_execute_for_command_not_registered(self):
         command_stub = Mock(ICommand)
