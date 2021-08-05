@@ -1,6 +1,4 @@
 import mock
-import sys
-import io
 import builtins
 from unittest import TestCase
 from src.health_records_system import *
@@ -105,6 +103,12 @@ class TestPatient(TestCase):
     def test_remove_medication_for_invalid_name(self):
         result = self.patient.remove_medication("Advil")
         self.assertEqual(result, None)
+
+    def test_clear_medication(self):
+        med = Medication("Advil", "1 tablet", "once a day")
+        self.patient.add_medication(med)
+        self.patient.clear_medication()
+        self.assertEqual(self.patient.medication, {})
 
     def test_get_test_results_for_valid_name_date(self):
         self.patient.add_test_results("COVID", "June 26, 2021", "Negative")

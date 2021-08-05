@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+import copy
 
 
 class ICommand(metaclass=ABCMeta):
@@ -40,9 +41,9 @@ class Invoker(metaclass=ABCMeta):
 
     def execute(self, command, *args):
         """
-        
-        :param command:
-        :param args:
+        Executes the command and adds it to the command history
+        :param command: a subtype of the ICommand interface, the command to be executed
+        :param args: any additional arguments that the Receiver (the Health Records System) requires to execute the command
         """
         if command in self._commands:
             self._position += 1
@@ -59,6 +60,10 @@ class Invoker(metaclass=ABCMeta):
             print(f"You must register command {command} before executing it.")
 
     def undo(self):
+        """
+        Undoes the last performed action based on the current position in the command history.
+        If all actions have already been undone, there are no effects.
+        """
         if self._position > -1:
             command_to_undo = self._history[self._position]  # (command, args)
             command_to_undo[0].undo(command_to_undo[1])
@@ -68,6 +73,12 @@ class Invoker(metaclass=ABCMeta):
             print(f"All actions have been undone.")
 
     def redo(self):
+        """
+        Redoes the last undone command if the current position is not at the end of the command history, meaning some
+        commands have been undone previously.
+        Otherwise, if the current position is at the end of the command history, the last performed command is performed
+        again.
+        """
         if self._position < len(self._history)-1:  # redo the last undone command
             self._position += 1
             command_to_redo = self._history[self._position]  # (command, args)
@@ -86,10 +97,18 @@ class AddPatientCommand(ICommand):
         self._system = system
 
     def execute(self, *args):
+        """
+        Adds a patient to the system
+        :param args: requires one argument; the Patient object to be added
+        """
         patient = args[0]
         self._system.add_patient(patient)
 
     def undo(self, *args):
+        """
+        Undoes the action by removing the patient from the system
+        :param args: requires one argument; the Patient object to be removed
+        """
         patient = args[0]
         self._system.remove_patient(patient.id)
 
@@ -100,9 +119,17 @@ class RemovePatientCommand(ICommand):
         self._system = system
 
     def execute(self, *args):
+        """
+        Removes a patient from the system
+        :param args: requires one argument; the Patient object to be removed
+        """
         self._system.remove_patient(args[0].id)
 
     def undo(self, *args):
+        """
+        Undoes the action by adding the patient back to the system
+        :param args: requires one argument; the Patient object to be added
+        """
         self._system.add_patient(args[0])
 
 
@@ -110,12 +137,26 @@ class AddMedicationCommand(ICommand):
 
     def __init__(self, system):
         self._system = system
+        self._orig_medication = {}  # stores the previous state of the patient's medication record
 
     def execute(self, *args):
+        """
+        Adds a medication to a patient's record
+        :param args: requires two arguments; the Patient object and the Medication object to be added
+        """
+        self._orig_medication = copy.deepcopy(args[0].medication)  # store the previous medication in case it needs to be recovered later
         args[0].add_medication(args[1])
 
     def undo(self, *args):
-        args[0].remove_medication(args[1])
+        """
+        Undoes the last addition to the patient's medication record by recovering the previous state of the medication
+        :param args: requires one argument; the Patient object
+        """
+        patient = args[0]
+        patient.clear_medication()
+
+        for med in self._orig_medication.values():
+            patient.add_medication(med)
 
 
 class RemoveMedicationCommand(ICommand):
@@ -124,9 +165,17 @@ class RemoveMedicationCommand(ICommand):
         self._system = system
 
     def execute(self, *args):
-        args[0].remove_medication(args[1])
+        """
+        Removes a medication from a patient's record
+        :param args: requires two arguments; the Patient object and the Medication object to be removed
+        """
+        args[0].remove_medication(args[1].name)
 
     def undo(self, *args):
+        """
+        Undoes the removal of a medication by adding it back to a patient's record
+        :param args: requires two arguments; the Patient object and the Medication object to be added back
+        """
         args[0].add_medication(args[1])
 
 
@@ -134,13 +183,21 @@ class AddTestResultsCommand(ICommand):
 
     def __init__(self, system):
         self._system = system
-        self._orig_test_results = {}
+        self._orig_test_results = {}  # stores the previous state of the patient's test results record
 
     def execute(self, *args):
-        self._orig_test_results = args[0].test_results
+        """
+        Adds test results to a patient's record
+        :param args: requires four arguments; the Patient object, the name of the test, the date it was performed (DD/MM/YYYY), and the test result
+        """
+        self._orig_test_results = copy.deepcopy(args[0].test_results)  # store the previous test results in case they need to be recovered later
         args[0].add_test_results(args[1], args[2], args[3])
 
     def undo(self, *args):
+        """
+        Undoes the last addition to the patient's test results record by recovering the previous state of the test results
+        :param args: requires one argument; the Patient object
+        """
         patient = args[0]
         patient.clear_test_results()
 

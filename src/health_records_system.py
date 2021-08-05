@@ -1,3 +1,6 @@
+import copy
+
+
 class HealthRecordsSystem(object):
     """
     Implements an Electronic Health Records System that stores patient information.
@@ -119,10 +122,11 @@ class Patient(object):
         If it does exist, the medication's information will be overwritten upon the user's input of Y/N.
         :param med: the new medication to be added to the patient's record
         """
+
         if med.name in self._medication:
             overwrite = input(f"Patient #{self._id} is already taking this medication. Overwrite dosage and frequency? Y/N")
             if overwrite == "Y":
-                self._medication[med.name] = med
+                self._medication[med.name] = med  # update the medication information
                 print(f"Medication successfully updated in patient #{self._id}'s record.")
             else:
                 print(f"Failure: Medication was not updated in patient #{self._id}'s record.")
@@ -144,6 +148,12 @@ class Patient(object):
         except KeyError:
             print(f"{med_name} does not exist in the patient's record.")
             return None
+
+    def clear_medication(self):
+        """
+        Clears all medication from the patient's record.
+        """
+        self._medication.clear()
 
     def get_test_results(self, name, date):
         """
