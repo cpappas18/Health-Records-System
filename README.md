@@ -26,7 +26,7 @@ To run the program, please use the command `python3 main.py`.
 # Unit Testing
 40 test cases have been written to thoroughly test the program for errors. If any additional issues are found, please feel free to add your own tests and merge them with the main branch. 
 
-To run the tests, please first install the necessary packages using the command `pip install -r requirements.txt` and then use the command `python3 -m unittest`.
+To run the tests, please first install the necessary packages using the command `pip install -r requirements.txt` and then run the command `python3 -m unittest`.
 
 # Public Disclosure
 This project was created for practice and experimentation in software design and users must be aware that confidential patient information is not secure in this system. I do not take risk nor responsibility for any legal issues that arise from the usage of this software.
