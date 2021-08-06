@@ -66,7 +66,7 @@ class Invoker(metaclass=ABCMeta):
         """
         if self._position > -1:
             command_to_undo = self._history[self._position]  # (command, args)
-            command_to_undo[0].undo(command_to_undo[1])
+            command_to_undo[0].undo(*command_to_undo[1])
             self._position -= 1
             print("The last action has been undone.")
         else:
@@ -82,11 +82,11 @@ class Invoker(metaclass=ABCMeta):
         if self._position < len(self._history)-1:  # redo the last undone command
             self._position += 1
             command_to_redo = self._history[self._position]  # (command, args)
-            command_to_redo[0].execute(command_to_redo[1])
+            command_to_redo[0].execute(*command_to_redo[1])
 
         else:  # redo the last performed action
             command_to_redo = self._history[self._position]  # (command, args)
-            command_to_redo[0].execute(command_to_redo[1])
+            command_to_redo[0].execute(*command_to_redo[1])
 
         print("The last action has been redone.")
 

@@ -1,19 +1,21 @@
 from health_records_system import *
 from command import *
 
+# instantiate Receiver and Invoker for Command design pattern
+SYSTEM = HealthRecordsSystem()
+INVOKER = Invoker()
+
+# create commands
+ADD_PATIENT = AddPatientCommand(SYSTEM)
+REMOVE_PATIENT = RemovePatientCommand(SYSTEM)
+ADD_MEDS = AddMedicationCommand(SYSTEM)
+REMOVE_MEDS = RemoveMedicationCommand(SYSTEM)
+ADD_TEST_RESULTS = AddTestResultsCommand(SYSTEM)
+
 
 def main():
-    SYSTEM = HealthRecordsSystem()  # instantiate Receiver in Command design pattern
-
-    # create commands
-    ADD_PATIENT = AddPatientCommand(SYSTEM)
-    REMOVE_PATIENT = RemovePatientCommand(SYSTEM)
-    ADD_MEDS = AddMedicationCommand(SYSTEM)
-    REMOVE_MEDS = RemoveMedicationCommand(SYSTEM)
-    ADD_TEST_RESULTS = AddTestResultsCommand(SYSTEM)
 
     # register commands with Invoker
-    INVOKER = Invoker()
     INVOKER.register(ADD_PATIENT)
     INVOKER.register(REMOVE_PATIENT)
     INVOKER.register(ADD_MEDS)
@@ -75,7 +77,8 @@ def main():
             break
 
         else:
-            print("Please enter a number between 1 and 6.")    
+            print("Please enter a number between 1 and 6.")
+
 
 def view_edit_records(patient):
     while True:
@@ -103,8 +106,11 @@ def view_edit_records(patient):
             print(f"Phone number: {patient.phone_number}")
 
         elif option == 2:
-            for medication, (dosage, frequency) in patient.medication.items():
-                print(f"Medication: {medication}, Dosage: {dosage}, Frequency: {frequency}\n")
+            if len(patient.medication) > 0:
+                for medication, (dosage, frequency) in patient.medication.items():
+                    print(f"Medication: {medication}, Dosage: {dosage}, Frequency: {frequency}\n")
+            else:
+                print("This patient is not taking any medication.")
 
         elif option == 3:
             med_name = input("Please input the name of the medication: ")
