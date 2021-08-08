@@ -52,7 +52,7 @@ class HealthRecordsSystem(object):
         :param patient: the new patient to be added to the system
         """
         if patient.id in self._patients:
-            overwrite = input(f"Patient #{patient.id} already exists. Overwrite? Y/N")
+            overwrite = input(f"Patient #{patient.id} already exists. Overwrite? Y/N ")
             if overwrite == "Y":
                 self._patients[patient.id] = patient
                 print(f"Patient #{patient.id} successfully added to the system.")
@@ -93,6 +93,14 @@ class Patient(object):
         return self._id
 
     @property
+    def name(self):
+        return self._name
+
+    @property
+    def age(self):
+        return self._age
+
+    @property
     def phone_number(self):
         return self._phone_number
 
@@ -124,7 +132,7 @@ class Patient(object):
         """
 
         if med.name in self._medication:
-            overwrite = input(f"Patient #{self._id} is already taking this medication. Overwrite dosage and frequency? Y/N")
+            overwrite = input(f"Patient #{self._id} is already taking this medication. Overwrite dosage and frequency? Y/N ")
             if overwrite == "Y":
                 self._medication[med.name] = med  # update the medication information
                 print(f"Medication successfully updated in patient #{self._id}'s record.")
@@ -177,7 +185,7 @@ class Patient(object):
         :param result: result of the test
         """
         if (name, date) in self._test_results.keys():
-            overwrite = input(f"A result for this test on {date} has already been recorded. Overwrite test result? Y/N")
+            overwrite = input(f"A result for this test on {date} has already been recorded. Overwrite test result? Y/N ")
             if overwrite == "Y":
                 self._test_results[(name, date)] = result
                 print(f"Test result successfully updated in patient #{self._id}'s record.")

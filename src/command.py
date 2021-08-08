@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import copy
-
+import sys
 
 class ICommand(metaclass=ABCMeta):
     """
@@ -70,7 +70,7 @@ class Invoker(metaclass=ABCMeta):
             self._position -= 1
             print("The last action has been undone.")
         else:
-            print(f"All actions have been undone.")
+            print("No commands have been performed yet or all commands have already been undone.")
 
     def redo(self):
         """
@@ -78,17 +78,21 @@ class Invoker(metaclass=ABCMeta):
         commands have been undone previously.
         Otherwise, if the current position is at the end of the command history, the last performed command is performed
         again.
+        If no commands have been performed yet, there are no effects.
         """
-        if self._position < len(self._history)-1:  # redo the last undone command
+        if self._position == -1:  # no commands have been performed
+            print("There are no commands to redo.")
+
+        elif self._position < len(self._history)-1:  # redo the last undone command
             self._position += 1
             command_to_redo = self._history[self._position]  # (command, args)
             command_to_redo[0].execute(*command_to_redo[1])
+            print("The last action has been redone.")
 
         else:  # redo the last performed action
             command_to_redo = self._history[self._position]  # (command, args)
             command_to_redo[0].execute(*command_to_redo[1])
-
-        print("The last action has been redone.")
+            print("The last action has been redone.")
 
 
 class AddPatientCommand(ICommand):
@@ -155,8 +159,14 @@ class AddMedicationCommand(ICommand):
         patient = args[0]
         patient.clear_medication()
 
+        # suppress console output from add_medication function
+        save_stdout = sys.stdout
+        sys.stdout = open('trash', 'w')
+
         for med in self._orig_medication.values():
             patient.add_medication(med)
+
+        sys.stdout = save_stdout  # restore console output
 
 
 class RemoveMedicationCommand(ICommand):
@@ -201,5 +211,11 @@ class AddTestResultsCommand(ICommand):
         patient = args[0]
         patient.clear_test_results()
 
+        # suppress console output from add_test_results function
+        save_stdout = sys.stdout
+        sys.stdout = open('trash', 'w')
+
         for (name, date), result in self._orig_test_results.items():
             patient.add_test_results(name, date, result)
+
+        sys.stdout = save_stdout  # restore console output

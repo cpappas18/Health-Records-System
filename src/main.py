@@ -44,10 +44,8 @@ def main():
             id = input("Please input the patient's ID number: ")
             patient = SYSTEM.get_patient(id)
 
-            if patient is None:
-                continue
-
-            view_edit_records(patient)
+            if patient:
+                view_edit_records(patient)
 
         elif option == 2:
             id = input("Please input the patient's ID number: ")
@@ -61,10 +59,8 @@ def main():
             id = input("Please input the patient's ID number: ")
             patient = SYSTEM.get_patient(id)
 
-            if patient is None:
-                continue
-
-            INVOKER.execute(REMOVE_PATIENT, patient)
+            if patient:
+                INVOKER.execute(REMOVE_PATIENT, patient)
 
         elif option == 4:
             INVOKER.undo()
@@ -74,7 +70,7 @@ def main():
 
         elif option == 6:
             print("Thank you for using the Electronic Health Records System!")
-            break
+            exit(0)
 
         else:
             print("Please enter a number between 1 and 6.")
@@ -84,7 +80,7 @@ def view_edit_records(patient):
     while True:
         option = input("""
         ----- View and Edit Patient Records -----
-            1. Get patient contact information
+            1. View patient information
             2. View medication
             3. Add medication
             4. Remove medication
@@ -99,16 +95,19 @@ def view_edit_records(patient):
         try:
             option = int(option)
         except ValueError:
-            print("Please enter a number between 1 and 7.\n")
+            print("Please enter a number between 1 and 9.")
             continue
 
         if option == 1:
+            print(f"Name: {patient.name}")
+            print(f"Age: {patient.age}")
             print(f"Phone number: {patient.phone_number}")
+            print(f"ID number: {patient.id}")
 
         elif option == 2:
             if len(patient.medication) > 0:
-                for medication, (dosage, frequency) in patient.medication.items():
-                    print(f"Medication: {medication}, Dosage: {dosage}, Frequency: {frequency}\n")
+                for med_name, medication in patient.medication.items():
+                    print(f"Medication: {med_name}, Dosage: {medication.dosage}, Frequency: {medication.frequency}")
             else:
                 print("This patient is not taking any medication.")
 
@@ -121,23 +120,29 @@ def view_edit_records(patient):
 
         elif option == 4:
             med_name = input("Please input the name of the medication: ")
-            med = SYSTEM.get_medication(med_name)
+            med = patient.get_medication(med_name)
 
-            if med is None:
-                continue
-
-            INVOKER.execute(REMOVE_MEDS, patient, med_name)
+            if med:
+                INVOKER.execute(REMOVE_MEDS, patient, med_name)
 
         elif option == 5:
-            view_option = input("To view all test results, type \"all\"."
-                                "Otherwise, specify the test name and date that it was performed in the format \"name, DD/MM/YYYY\".")
+            view_option = input("To view all test results, type \"all\". "
+                                "Otherwise, specify the test name and date that it was performed in the format \"name DD/MM/YYYY\". ")
 
             if view_option == "all":
-                for (test_name, date), result in patient.test_results.items():
-                    print(f"Test: {test_name}, Date: {date}, Result: {result}\n")
+                if len(patient.test_results) == 0:
+                    print("This patient has no test results to display.")
+                else:
+                    for (test_name, date), result in patient.test_results.items():
+                        print(f"Test: {test_name}, Date: {date}, Result: {result}\n")
             else:
-                test_name, date = view_option.split(",")
-                result = patient.get_test_results(test_name, date)
+                try:
+                    test_name, date = view_option.split(" ")
+                    result = patient.get_test_results(test_name, date)
+                    if result:
+                        print(f"Test: {test_name}, Date: {date}, Result: {result}\n")
+                except ValueError:
+                    print("The input is invalid. Please try again.")
 
         elif option == 6:
             test_name = input("Please input the name of the test: ")
@@ -155,7 +160,7 @@ def view_edit_records(patient):
             return
 
         else:
-            print("Please enter a number between 1 and 7.")
+            print("Please enter a number between 1 and 9.")
 
 
 if __name__ == "__main__":

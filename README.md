@@ -1,7 +1,5 @@
 # Electronic Health Records System
 
-Note: this project is not yet completed, in the testing phase
-
 An Electronic Health Records system implemented in Python to demonstrate object-oriented programming and software design patterns. 
 
 # Design Patterns
